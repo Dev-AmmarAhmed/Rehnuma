@@ -27,3 +27,9 @@ input:focus { border-color:var(--primary); }
 .rule-hint { font-size:11px; color:var(--subtext); margin-top:4px; line-height:1.4; }
 .lock-overlay { position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px; }
 .pin-input { text-align:center; font-size:24px; letter-spacing:10px; font-weight:800; }
+.step-indicator { display:flex; justify-content:space-between; margin-bottom:18px; gap:6px; }
+.step-dot { flex:1; height:6px; border-radius:4px; background:var(--border); transition:0.3s; }
+.step-dot.active { background:var(--primary); }
+.btn-row { display:flex; gap:10px; margin-top:12px; }
+.img-preview { width:100%; max-height:160px; object-fit:cover; border-radius:10px; border:1px solid var(--border); margin-top:8px; }
+.rules-box { background:var(--input-bg); border:1px solid var(--border); padding:14px; border-radius:10px; margin-bottom:14px; text-align:left; font-size:14px; line-height:1.6; }
