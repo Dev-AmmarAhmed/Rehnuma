@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "member_documents": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.uid === 'IPGPTPOsyDfdfAuSn6hZu2WsDWf1')",
+        ".write": "auth != null && (auth.uid === $uid || auth.uid === 'IPGPTPOsyDfdfAuSn6hZu2WsDWf1')"
+      }
+    }
+  }
+}

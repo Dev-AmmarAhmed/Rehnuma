@@ -157,3 +157,13 @@ document.getElementById("btn-complete-setup").onclick = async () => {
 };
 
 window.logoutUser = async () => { isSessionUnlocked = false; await signOut(auth); };
+// Capacitor Native App State Listener (Android Background -> Foreground)
+if (window.Capacitor?.Plugins?.App) {
+  window.Capacitor.Plugins.App.addListener("appStateChange", ({ isActive }) => {
+    if (!isActive) {
+      window.lockAppNow();
+    } else {
+      triggerAppLockIfNeeded();
+    }
+  });
+}
