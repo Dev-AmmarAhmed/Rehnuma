@@ -14,7 +14,8 @@ const firebaseConfig = {
   appId: "1:409507107740:web:8677d798462becd6afae59"
 };
 
-export const ADMIN_UID = "IPGPTPOsyDfdfAuSn6hZu2WsDWf1";
+export const ADMIN_UIDS = ["IPGPTPOsyDfdfAuSn6hZu2WsDWf1", "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
+export const isAdminUid = (uid) => ADMIN_UIDS.includes(uid);
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
@@ -73,7 +74,7 @@ document.getElementById("btn-lock-logout").onclick = () => window.logoutUser();
 async function routeUser(user) {
   showScreen("screen-loading");
   try {
-    if (user.uid === ADMIN_UID) {
+    if (isAdminUid(user.uid)) {
       if (!localStorage.getItem(getPinKey(user.uid))) showScreen("screen-setup");
       else { showScreen("screen-admin-dash"); triggerAppLockIfNeeded(); }
       return;
@@ -176,7 +177,7 @@ document.getElementById("btn-complete-setup").onclick = async () => {
     localStorage.setItem(getPinKey(u.uid), pin);
     localStorage.setItem(getBioKey(u.uid), bio ? "true" : "false");
     isSessionUnlocked = true;
-    if (u.uid !== ADMIN_UID) {
+    if (!isAdminUid(u.uid)) {
       await updateDoc(doc(db, "members", u.uid), { status: "active", appPin: pin, activatedAt: serverTimestamp() });
     }
     await routeUser(u);

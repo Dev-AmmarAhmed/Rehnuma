@@ -2,7 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
-      return request.auth != null && request.auth.uid == "IPGPTPOsyDfdfAuSn6hZu2WsDWf1";
+      return request.auth != null && (
+        request.auth.uid == "IPGPTPOsyDfdfAuSn6hZu2WsDWf1" ||
+        request.auth.uid == "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"
+      );
     }
     match /members/{userId} {
       allow read: if request.auth != null;

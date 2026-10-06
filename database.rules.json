@@ -2,8 +2,8 @@
   "rules": {
     "member_documents": {
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || auth.uid === 'IPGPTPOsyDfdfAuSn6hZu2WsDWf1')",
-        ".write": "auth != null && (auth.uid === $uid || auth.uid === 'IPGPTPOsyDfdfAuSn6hZu2WsDWf1')"
+        ".read": "auth != null && (auth.uid === $uid || auth.uid === 'IPGPTPOsyDfdfAuSn6hZu2WsDWf1' || auth.uid === 'Rtuj0PgtxWO6CGc3qo1SgiohFyn1')",
+        ".write": "auth != null && (auth.uid === $uid || auth.uid === 'IPGPTPOsyDfdfAuSn6hZu2WsDWf1' || auth.uid === 'Rtuj0PgtxWO6CGc3qo1SgiohFyn1')"
       }
     }
   }
