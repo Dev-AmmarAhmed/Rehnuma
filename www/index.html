@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Rehnuma Society</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --subtext: #64748b;
+      --primary: #059669;
+      --border: #e2e8f0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f8fafc;
+        --subtext: #94a3b8;
+        --primary: #10b981;
+        --border: #334155;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .card { background: var(--card); border: 1px solid var(--border); padding: 28px 24px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    h1 { color: var(--primary); font-size: 24px; margin-bottom: 6px; }
+    p { color: var(--subtext); font-size: 13px; margin-bottom: 20px; font-weight: 500; }
+    .badge { display: inline-block; padding: 6px 14px; background: var(--primary); color: #fff; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Rehnuma Society</h1>
+    <p>Under management MDBTW Association</p>
+    <span class="badge">Phase 1: Build System Ready</span>
+  </div>
+</body>
+</html>
