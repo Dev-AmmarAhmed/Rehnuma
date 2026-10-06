@@ -37,3 +37,16 @@ document.getElementById("screen-setup").innerHTML = `
   <div class="form-group" style="display:flex;align-items:center;gap:10px;"><input type="checkbox" id="setup-bio" checked style="width:18px;height:18px;"><label for="setup-bio" style="margin:0;">Enable Fingerprint</label></div>
   <p id="setup-error" class="error-msg hidden"></p>
   <button id="btn-complete-setup" class="btn btn-primary">Activate Account</button>`;
+document.getElementById("screen-login").innerHTML = `
+  <div class="form-group"><label>Email Address</label><input type="email" id="login-email" placeholder="member@example.com"></div>
+  <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="Enter password"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" id="toggle-pw" style="width:15px;height:15px;"> Show Password
+    </label>
+    <a href="#" id="btn-forgot-pw" style="color:var(--primary);text-decoration:none;font-weight:700;">Forgot Password?</a>
+  </div>
+  <p id="login-error" class="error-msg hidden"></p>
+  <button id="btn-login" class="btn btn-primary">Sign In / Register</button>
+  <div class="divider">— OR —</div>
+  <button id="btn-google" class="btn btn-outline">🌐 Login with Google</button>`;

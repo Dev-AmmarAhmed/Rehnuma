@@ -1,6 +1,6 @@
 import "./ui-init.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential, sendPasswordResetEmail, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -28,14 +28,12 @@ export function showScreen(id) {
 export function isValidSecurePassword(pw) {
   return pw && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[@/$_&\-\?!;']/.test(pw);
 }
-
 let isSessionUnlocked = false;
 const getPinKey = (uid) => `rehnuma_pin_${uid}`;
 const getBioKey = (uid) => `rehnuma_bio_${uid}`;
 
 export function triggerAppLockIfNeeded() {
-  const u = auth.currentUser;
-  if (!u) return;
+  const u = auth.currentUser; if (!u) return;
   const pin = localStorage.getItem(getPinKey(u.uid));
   if (pin && !isSessionUnlocked) {
     document.getElementById("unlock-pin-input").value = "";
@@ -47,18 +45,11 @@ export function triggerAppLockIfNeeded() {
 
 window.lockAppNow = () => { isSessionUnlocked = false; triggerAppLockIfNeeded(); };
 
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") isSessionUnlocked = false;
-  else triggerAppLockIfNeeded();
-});
-
 async function attemptBiometricUnlock() {
   try {
     if (window.Capacitor?.Plugins?.NativeBiometric) {
       await window.Capacitor.Plugins.NativeBiometric.verifyIdentity({
-        reason: "Unlock Rehnuma Society",
-        title: "Rehnuma Security Lock",
-        subtitle: "Under management MDBTW Association"
+        reason: "Unlock Rehnuma Society", title: "Rehnuma Security Lock"
       });
       isSessionUnlocked = true;
       document.getElementById("app-lock-screen").classList.add("hidden");
@@ -67,19 +58,15 @@ async function attemptBiometricUnlock() {
 }
 
 document.getElementById("btn-unlock-pin").onclick = () => {
-  const u = auth.currentUser;
-  if (!u) return;
-  const val = document.getElementById("unlock-pin-input").value.trim();
-  if (val === localStorage.getItem(getPinKey(u.uid))) {
+  const u = auth.currentUser; if (!u) return;
+  if (document.getElementById("unlock-pin-input").value.trim() === localStorage.getItem(getPinKey(u.uid))) {
     isSessionUnlocked = true;
     document.getElementById("app-lock-screen").classList.add("hidden");
   } else {
     const err = document.getElementById("lock-error");
-    err.textContent = "Incorrect 6-digit PIN.";
-    err.classList.remove("hidden");
+    err.textContent = "Incorrect 6-digit PIN."; err.classList.remove("hidden");
   }
 };
-
 document.getElementById("btn-unlock-bio").onclick = attemptBiometricUnlock;
 document.getElementById("btn-lock-logout").onclick = () => window.logoutUser();
 
@@ -103,8 +90,7 @@ async function routeUser(user) {
         localStorage.setItem(getPinKey(user.uid), data.appPin);
         localStorage.setItem(getBioKey(user.uid), "true");
       }
-      showScreen("screen-member-dash");
-      triggerAppLockIfNeeded();
+      showScreen("screen-member-dash"); triggerAppLockIfNeeded();
     } else showScreen("screen-register");
   } catch (e) { showScreen("screen-login"); }
 }
@@ -113,30 +99,71 @@ onAuthStateChanged(auth, u => {
   if (u) routeUser(u);
   else { isSessionUnlocked = false; document.getElementById("app-lock-screen").classList.add("hidden"); showScreen("screen-login"); }
 });
+document.getElementById("toggle-pw").onchange = (e) => {
+  document.getElementById("login-password").type = e.target.checked ? "text" : "password";
+};
+
+document.getElementById("btn-forgot-pw").onclick = async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("login-email").value.trim();
+  const err = document.getElementById("login-error");
+  if (!email) { err.textContent = "Enter your email above first, then tap Forgot Password."; err.classList.remove("hidden"); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("✅ Password reset link sent to " + email + "! Check your inbox/spam.");
+  } catch (ex) { err.textContent = ex.message; err.classList.remove("hidden"); }
+};
 
 document.getElementById("btn-login").onclick = async () => {
   const email = document.getElementById("login-email").value.trim();
-  const pw = document.getElementById("login-password").value;
+  const pw = document.getElementById("login-password").value.trim();
   const err = document.getElementById("login-error");
   err.classList.add("hidden");
-  if (!email || !pw) { err.textContent = "Enter email and password."; err.classList.remove("hidden"); return; }
-  try { await signInWithEmailAndPassword(auth, email, pw); }
-  catch (e) {
-    try { await createUserWithEmailAndPassword(auth, email, pw); }
-    catch (e2) { err.textContent = "Invalid credentials."; err.classList.remove("hidden"); }
-  }
+  if (!email || !pw) { err.textContent = "Please enter email and password."; err.classList.remove("hidden"); return; }
+
+  const btn = document.getElementById("btn-login");
+  btn.disabled = true; btn.textContent = "Signing in...";
+  try {
+    await signInWithEmailAndPassword(auth, email, pw);
+  } catch (signInErr) {
+    try {
+      await createUserWithEmailAndPassword(auth, email, pw);
+    } catch (createErr) {
+      if (createErr.code === "auth/email-already-in-use") {
+        err.textContent = "Incorrect password for this email. Tap 'Forgot Password?' to reset.";
+      } else if (createErr.code === "auth/weak-password") {
+        err.textContent = "Password must be at least 6 characters.";
+      } else {
+        err.textContent = signInErr.code + ": " + signInErr.message;
+      }
+      err.classList.remove("hidden");
+    }
+  } finally { btn.disabled = false; btn.textContent = "Sign In / Register"; }
 };
 
 document.getElementById("btn-google").onclick = async () => {
   const err = document.getElementById("login-error");
   err.classList.add("hidden");
-  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-  catch (e) { err.textContent = e.message; err.classList.remove("hidden"); }
+  try {
+    const GoogleAuth = window.Capacitor?.Plugins?.GoogleAuth;
+    if (!GoogleAuth) throw new Error("GoogleAuth plugin not loaded");
+    await GoogleAuth.initialize({
+      clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
+      scopes: ["profile", "email"],
+      grantOfflineAccess: true
+    });
+    const googleUser = await GoogleAuth.signIn();
+    const idToken = googleUser?.authentication?.idToken;
+    const credential = GoogleAuthProvider.credential(idToken);
+    await signInWithCredential(auth, credential);
+  } catch (e) {
+    err.textContent = "Google Login: " + (e.message || JSON.stringify(e));
+    err.classList.remove("hidden");
+  }
 };
 
 document.getElementById("btn-complete-setup").onclick = async () => {
-  const u = auth.currentUser;
-  if (!u) return;
+  const u = auth.currentUser; if (!u) return;
   const pw = document.getElementById("setup-password").value;
   const pin = document.getElementById("setup-pin").value.trim();
   const bio = document.getElementById("setup-bio").checked;
@@ -157,13 +184,9 @@ document.getElementById("btn-complete-setup").onclick = async () => {
 };
 
 window.logoutUser = async () => { isSessionUnlocked = false; await signOut(auth); };
-// Capacitor Native App State Listener (Android Background -> Foreground)
+
 if (window.Capacitor?.Plugins?.App) {
   window.Capacitor.Plugins.App.addListener("appStateChange", ({ isActive }) => {
-    if (!isActive) {
-      window.lockAppNow();
-    } else {
-      triggerAppLockIfNeeded();
-    }
+    if (!isActive) window.lockAppNow(); else triggerAppLockIfNeeded();
   });
 }
