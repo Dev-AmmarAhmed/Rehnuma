@@ -7,65 +7,105 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- LOGIN SCREEN -->
-  <div id="screen-login" class="card">
-    <div class="brand-header">
-      <h2>Rehnuma</h2>
-      <p>Under management MDBTW Association</p>
-    </div>
-    <div class="form-group">
-      <label>Username / Email</label>
-      <input type="text" id="login-user" placeholder="adminnn123 or admin123">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="login-password" placeholder="123">
-    </div>
-    <p id="login-error" class="error-msg hidden" style="color:#ef4444;font-size:12px;margin-bottom:10px;"></p>
-    <button id="btn-login" class="btn btn-primary">Login Now</button>
+  <!-- LOADING -->
+  <div id="screen-loading" class="card" style="text-align:center; margin-top:50vh; transform:translateY(-50%);">
+    <h2 style="color:var(--primary);">Rehnuma</h2><p style="color:#94a3b8;">Loading...</p>
   </div>
 
-  <!-- ADMIN DASHBOARD (4 Bottom Tabs) -->
-  <div id="screen-admin-dash" class="hidden">
-    <div class="pro-header">
-      <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Admin Dashboard</p></div>
-      <div class="icon-btn" onclick="window.location.reload()" style="cursor:pointer;">🚪</div>
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="card hidden">
+    <div class="brand-header"><h2>Rehnuma</h2><p>Member Login</p></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="login-email" placeholder="email@example.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="Enter password"></div>
+    <p id="login-error" class="error-msg hidden"></p>
+    <button id="btn-login" class="btn btn-primary" style="margin-bottom:15px;">Login Now</button>
+    <div style="text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+      <p style="font-size:12px; color:#94a3b8; margin-bottom:10px;">Don't have an account?</p>
+      <button id="btn-go-register" class="btn btn-outline" style="border:1px solid var(--primary); color:var(--primary); background:transparent;">Register New Member</button>
     </div>
-    <div class="pro-card main-content" style="margin-top:-20px; border-radius:16px 16px 0 0; min-height:75vh; color:#fff;">
-      <div id="adm-view-home">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">🏠 Home Overview</h3>
-        <p style="color:#94a3b8; text-align:center; font-size:13px; margin-top:10px;">Welcome Admin! System is running smoothly.</p>
-      </div>
-      <div id="adm-view-members" class="hidden">
-        <h3 style="color:#fff; margin-bottom:15px;">👥 Registered Members</h3>
-        <div id="members-list"><p style="font-size:13px;color:#94a3b8;">No members registered yet.</p></div>
-      </div>
-      <div id="adm-view-loan" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">💸 Loan Management</h3>
-        <p style="color:#94a3b8; text-align:center; font-size:13px; margin-top:10px;">Manage active and pending loans here.</p>
-      </div>
-      <div id="adm-view-recovery" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">🔄 Loan Recovery</h3>
-        <p style="color:#94a3b8; text-align:center; font-size:13px; margin-top:10px;">Track recovery status and installments.</p>
-      </div>
+  </div>
+
+  <!-- REGISTRATION FORM -->
+  <div id="screen-register" class="card hidden" style="max-width:90%; margin:20px auto; max-height:90vh; overflow-y:auto;">
+    <h3 style="color:var(--primary); margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Member Registration</h3>
+    <div class="form-group"><label>Full Name</label><input type="text" id="reg-name"></div>
+    <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone"></div>
+    <div class="form-group"><label>Email (Used for Login)</label><input type="email" id="reg-email"></div>
+    <div class="form-group"><label>Create Password</label><input type="password" id="reg-password"></div>
+    <p id="reg-error" class="error-msg hidden"></p>
+    <button id="btn-submit-reg" class="btn btn-primary" style="margin-top:10px;">Submit Registration</button>
+    <button onclick="showScreen('screen-login')" class="btn" style="background:transparent; color:#94a3b8; margin-top:10px;">Cancel & Go Back</button>
+  </div>
+
+  <!-- PENDING SCREEN (NO LOGOUT) -->
+  <div id="screen-pending" class="card hidden" style="text-align:center;">
+    <span style="display:inline-block; padding:5px 10px; background:rgba(234,179,8,0.2); color:#eab308; border-radius:5px; font-size:12px; font-weight:bold; margin-bottom:15px;">STATUS: SUBMITTED</span>
+    <h3 style="color:#fff;">Registration Under Review</h3>
+    <p style="color:#94a3b8; font-size:13px; margin-top:10px;">Your application has been submitted to the administration. Please wait for approval.</p>
+  </div>
+
+  <!-- SETUP APP PASSWORD / PIN -->
+  <div id="screen-setup" class="card hidden">
+    <h3 style="color:var(--primary); margin-bottom:15px;">Set App Security</h3>
+    <p style="color:#94a3b8; font-size:12px; margin-bottom:15px;">Set a 6-digit PIN to secure your app.</p>
+    <div class="form-group"><label>Create 6-Digit PIN</label><input type="password" id="setup-pin" maxlength="6" inputmode="numeric" placeholder="••••••"></div>
+    <p id="setup-error" class="error-msg hidden"></p>
+    <button id="btn-save-setup" class="btn btn-primary">Save & Continue</button>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="screen-admin-dash" class="full-screen hidden">
+    <div class="pro-header"><div class="pro-title"><h1>REHNUMA ADMIN</h1></div><div class="icon-btn" onclick="window.logoutUser()">🚪</div></div>
+    <div class="pro-card main-content" style="margin-top:-20px; border-radius:16px 16px 0 0; min-height:85vh; color:#fff;">
+      <div id="adm-view-home"><h3 style="text-align:center; margin-top:40px;">Home (Overview)</h3></div>
+      <div id="adm-view-members" class="hidden"><h3 style="margin-bottom:15px;">Registered Members</h3><div id="members-list">Loading...</div></div>
+      <div id="adm-view-loan" class="hidden"><h3 style="text-align:center; margin-top:40px;">Loan Section</h3></div>
+      <div id="adm-view-recovery" class="hidden"><h3 style="text-align:center; margin-top:40px;">Recovery Section</h3></div>
     </div>
     <div class="bottom-nav">
-      <div class="nav-item active" id="nav-home" onclick="switchTab('home')"><span>🏠</span><span>Home</span></div>
-      <div class="nav-item" id="nav-members" onclick="switchTab('members')"><span>👥</span><span>Members</span></div>
-      <div class="nav-item" id="nav-loan" onclick="switchTab('loan')"><span>💸</span><span>Loan</span></div>
-      <div class="nav-item" id="nav-recovery" onclick="switchTab('recovery')"><span>🔄</span><span>Recovery</span></div>
+      <div class="nav-item active" id="nav-home" onclick="switchAdmTab('home')"><span style="font-size:20px;">🏠</span><span>Home</span></div>
+      <div class="nav-item" id="nav-members" onclick="switchAdmTab('members')"><span style="font-size:20px;">👥</span><span>Members</span></div>
+      <div class="nav-item" id="nav-loan" onclick="switchAdmTab('loan')"><span style="font-size:20px;">💸</span><span>Loan</span></div>
+      <div class="nav-item" id="nav-recovery" onclick="switchAdmTab('recovery')"><span style="font-size:20px;">🔄</span><span>Recovery</span></div>
     </div>
   </div>
 
   <!-- MEMBER DASHBOARD -->
-  <div id="screen-member-dash" class="hidden" style="padding:20px; color:#fff;">
-    <div class="brand-header">
-      <h2>Member Panel</h2>
-      <p>Welcome Member</p>
+  <div id="screen-member-dash" class="full-screen hidden">
+    <div class="pro-header">
+      <div class="icon-btn" onclick="document.getElementById('mem-drawer').classList.add('open')">☰</div>
+      <div class="pro-title"><h1>REHNUMA SOCIETY</h1></div>
+      <div class="icon-btn" style="opacity:0;"></div>
     </div>
-    <div class="card" style="margin-top:20px;">
-      <p>Aapka member dashboard successfully login ho gaya hai.</p>
-      <button class="btn btn-primary" onclick="window.location.reload()" style="margin-top:20px;">Logout</button>
+    
+    <!-- MEMBER LEFT DRAWER -->
+    <div id="mem-drawer" class="drawer">
+      <div style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between;">
+        <h3 style="margin:0; color:#fff;">Menu</h3>
+        <span onclick="document.getElementById('mem-drawer').classList.remove('open')" style="color:#94a3b8; font-size:20px; cursor:pointer;">✕</span>
+      </div>
+      <div class="drawer-item" onclick="showMemSection('home')">🏠 Dashboard Home</div>
+      <div class="drawer-item" onclick="showMemSection('profile')">👤 My Profile (Security)</div>
+      <div class="drawer-item" style="color:#ef4444; margin-top:auto;" onclick="window.logoutUser()">🚪 Logout</div>
+    </div>
+
+    <div class="pro-card" style="margin-top:-20px; border-radius:16px 16px 0 0; min-height:85vh; color:#fff;">
+      <div id="mem-sec-home">
+        <h3 style="margin-top:20px;">Welcome Member!</h3>
+        <p style="color:#94a3b8; font-size:13px;">Aapka account active hai.</p>
+      </div>
+      
+      <!-- MY PROFILE (SECURITY) -->
+      <div id="mem-sec-profile" class="hidden">
+        <h3 style="color:var(--primary); margin-bottom:20px;">Security Settings</h3>
+        <div class="form-group"><label>Update App PIN</label><input type="password" id="update-pin" maxlength="6" placeholder="New 6-digit PIN"></div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+          <input type="checkbox" id="toggle-bio" style="width:20px; height:20px;">
+          <label style="color:#fff; margin:0;">Enable Biometric Authentication</label>
+        </div>
+        <button id="btn-update-security" class="btn btn-primary">Save Settings</button>
+        <p id="sec-msg" style="color:#10b981; font-size:12px; margin-top:10px;"></p>
+      </div>
     </div>
   </div>
 
