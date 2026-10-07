@@ -2,29 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Rehnuma Society</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rehnuma</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app-lock-screen" class="lock-overlay hidden"></div>
-  <div class="container">
+  <!-- LOADING SCREEN -->
+  <div id="screen-loading" class="card hidden" style="text-align:center; padding:40px;">
+    <h2>Loading Rehnuma...</h2>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="card">
     <div class="brand-header">
-      <h1>Rehnuma Society</h1>
+      <h1>Rehnuma</h1>
       <p>Under management MDBTW Association</p>
     </div>
-    <div id="screen-loading" class="card" style="text-align:center;"><p>Verifying security & routing...</p></div>
-    <div id="screen-login" class="card hidden"></div>
-    <div id="screen-pending" class="card hidden"></div>
-    <div id="screen-rejected" class="card hidden"></div>
-    <div id="screen-setup" class="card hidden"></div>
-    <div id="screen-register" class="card hidden"></div>
-    <div id="screen-member-dash" class="card hidden"></div>
-    <div id="screen-admin-dash" class="card hidden"></div>
+    <div class="form-group">
+      <label>Username / Email</label>
+      <input type="text" id="login-user" placeholder="adminnn123 or admin123">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="123">
+    </div>
+    <p id="login-error" class="error-msg hidden"></p>
+    <button id="btn-simple-login" class="btn btn-primary">Login</button>
   </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="screen-admin-dash" class="hidden">
+    <div class="pro-header">
+      <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Admin Dashboard</p></div>
+      <div class="icon-btn" onclick="window.simpleLogout()">🚪</div>
+    </div>
+    <div class="pro-card main-content">
+      <div id="adm-view-home">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">Home</h3>
+        <p style="color:#94a3b8; text-align:center; font-size:13px;">Dashboard Overview (Empty for now)</p>
+      </div>
+      <div id="adm-view-members" class="hidden">
+        <h3 style="color:#fff; margin-bottom:15px;">Registered Members</h3>
+        <div id="members-list"><p style="font-size:13px;color:#94a3b8;">Loading members...</p></div>
+      </div>
+      <div id="adm-view-loan" class="hidden">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">Loan Management</h3>
+      </div>
+      <div id="adm-view-recovery" class="hidden">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">Loan Recovery</h3>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active" id="nav-adm-home" onclick="switchTab('adm', 'home')"><span class="nav-icon">🏠</span><span>Home</span></div>
+      <div class="nav-item" id="nav-adm-members" onclick="switchTab('adm', 'members')"><span class="nav-icon">👥</span><span>Members</span></div>
+      <div class="nav-item" id="nav-adm-loan" onclick="switchTab('adm', 'loan')"><span class="nav-icon">💸</span><span>Loan</span></div>
+      <div class="nav-item" id="nav-adm-recovery" onclick="switchTab('adm', 'recovery')"><span class="nav-icon">🔄</span><span>Recovery</span></div>
+    </div>
+  </div>
+
+  <!-- MEMBER DASHBOARD -->
+  <div id="screen-member-dash" class="hidden">
+    <div class="pro-header">
+      <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Member Dashboard</p></div>
+      <div class="icon-btn" onclick="window.simpleLogout()">🚪</div>
+    </div>
+    <div class="pro-card main-content">
+      <div id="mem-view-home">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">Home</h3>
+        <p style="color:#94a3b8; text-align:center; font-size:13px;">Welcome Member (Empty for now)</p>
+      </div>
+      <div id="mem-view-members" class="hidden">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">Members Directory</h3>
+      </div>
+      <div id="mem-view-loan" class="hidden">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">My Loans</h3>
+      </div>
+      <div id="mem-view-recovery" class="hidden">
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">My Recovery / Payments</h3>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active" id="nav-mem-home" onclick="switchTab('mem', 'home')"><span class="nav-icon">🏠</span><span>Home</span></div>
+      <div class="nav-item" id="nav-mem-members" onclick="switchTab('mem', 'members')"><span class="nav-icon">👥</span><span>Members</span></div>
+      <div class="nav-item" id="nav-mem-loan" onclick="switchTab('mem', 'loan')"><span class="nav-icon">💸</span><span>Loan</span></div>
+      <div class="nav-item" id="nav-mem-recovery" onclick="switchTab('mem', 'recovery')"><span class="nav-icon">🔄</span><span>Recovery</span></div>
+    </div>
+  </div>
+
   <script type="module" src="app.js"></script>
-  <script type="module" src="register.js"></script>
-  <script type="module" src="admin.js"></script>
-  <script type="module" src="member.js"></script>
 </body>
 </html>
