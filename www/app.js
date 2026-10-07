@@ -16,6 +16,7 @@ const firebaseConfig = {
 
 export const ADMIN_UIDS = ["IPGPTPOsyDfdfAuSn6hZu2WsDWf1", "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
 export const isAdminUid = (uid) => ADMIN_UIDS.includes(uid);
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
@@ -73,12 +74,12 @@ document.getElementById("btn-lock-logout").onclick = () => window.logoutUser();
 
 async function routeUser(user) {
   showScreen("screen-loading");
+  if (isAdminUid(user.uid)) {
+    if (!localStorage.getItem(getPinKey(user.uid))) showScreen("screen-setup");
+    else { showScreen("screen-admin-dash"); triggerAppLockIfNeeded(); }
+    return;
+  }
   try {
-    if (isAdminUid(user.uid)) {
-      if (!localStorage.getItem(getPinKey(user.uid))) showScreen("screen-setup");
-      else { showScreen("screen-admin-dash"); triggerAppLockIfNeeded(); }
-      return;
-    }
     const snap = await getDoc(doc(db, "members", user.uid));
     if (!snap.exists()) { showScreen("screen-register"); return; }
     const data = snap.data();
@@ -93,7 +94,10 @@ async function routeUser(user) {
       }
       showScreen("screen-member-dash"); triggerAppLockIfNeeded();
     } else showScreen("screen-register");
-  } catch (e) { showScreen("screen-login"); }
+  } catch (e) {
+    alert("Firestore Notice (" + e.code + "): Opening Registration Form.");
+    showScreen("screen-register");
+  }
 }
 
 onAuthStateChanged(auth, u => {
@@ -108,36 +112,39 @@ document.getElementById("btn-forgot-pw").onclick = async (e) => {
   e.preventDefault();
   const email = document.getElementById("login-email").value.trim();
   const err = document.getElementById("login-error");
-  if (!email) { err.textContent = "Enter your email above first, then tap Forgot Password."; err.classList.remove("hidden"); return; }
+  if (!email) { err.textContent = "Enter email above first."; err.classList.remove("hidden"); return; }
   try {
     await sendPasswordResetEmail(auth, email);
-    alert("✅ Password reset link sent to " + email + "! Check your inbox/spam.");
+    alert("✅ Password reset email sent to " + email);
   } catch (ex) { err.textContent = ex.message; err.classList.remove("hidden"); }
 };
 
 document.getElementById("btn-login").onclick = async () => {
   const email = document.getElementById("login-email").value.trim();
-  const pw = document.getElementById("login-password").value.trim();
+  const pw = document.getElementById("login-password").value;
   const err = document.getElementById("login-error");
   err.classList.add("hidden");
-  if (!email || !pw) { err.textContent = "Please enter email and password."; err.classList.remove("hidden"); return; }
+  if (!email || !pw) { err.textContent = "Enter both email and password."; err.classList.remove("hidden"); return; }
 
   const btn = document.getElementById("btn-login");
-  btn.disabled = true; btn.textContent = "Signing in...";
+  btn.disabled = true; btn.textContent = "Verifying...";
   try {
     await signInWithEmailAndPassword(auth, email, pw);
   } catch (signInErr) {
-    try {
-      await createUserWithEmailAndPassword(auth, email, pw);
-    } catch (createErr) {
-      if (createErr.code === "auth/email-already-in-use") {
-        err.textContent = "Incorrect password for this email. Tap 'Forgot Password?' to reset.";
-      } else if (createErr.code === "auth/weak-password") {
-        err.textContent = "Password must be at least 6 characters.";
-      } else {
-        err.textContent = signInErr.code + ": " + signInErr.message;
+    if (signInErr.code === "auth/user-not-found") {
+      try { await createUserWithEmailAndPassword(auth, email, pw); }
+      catch (ce) { err.textContent = ce.message; err.classList.remove("hidden"); }
+    } else {
+      try {
+        await createUserWithEmailAndPassword(auth, email, pw);
+      } catch (ce) {
+        if (ce.code === "auth/email-already-in-use") {
+          err.textContent = "Wrong password for this registered email. Tap 'Forgot Password?' to reset.";
+        } else {
+          err.textContent = signInErr.code + ": " + signInErr.message;
+        }
+        err.classList.remove("hidden");
       }
-      err.classList.remove("hidden");
     }
   } finally { btn.disabled = false; btn.textContent = "Sign In / Register"; }
 };
@@ -147,18 +154,18 @@ document.getElementById("btn-google").onclick = async () => {
   err.classList.add("hidden");
   try {
     const GoogleAuth = window.Capacitor?.Plugins?.GoogleAuth;
-    if (!GoogleAuth) throw new Error("GoogleAuth plugin not loaded");
     await GoogleAuth.initialize({
       clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
       scopes: ["profile", "email"],
-      grantOfflineAccess: true
+      grantOfflineAccess: false
     });
-    const googleUser = await GoogleAuth.signIn();
-    const idToken = googleUser?.authentication?.idToken;
-    const credential = GoogleAuthProvider.credential(idToken);
-    await signInWithCredential(auth, credential);
+    const gUser = await GoogleAuth.signIn();
+    const idToken = gUser?.authentication?.idToken || gUser?.idToken;
+    if (!idToken) throw new Error("No idToken returned from Google. Check Web Client ID in Firebase.");
+    const cred = GoogleAuthProvider.credential(idToken);
+    await signInWithCredential(auth, cred);
   } catch (e) {
-    err.textContent = "Google Login: " + (e.message || JSON.stringify(e));
+    err.textContent = "Google Auth: " + (e.message || JSON.stringify(e));
     err.classList.remove("hidden");
   }
 };
