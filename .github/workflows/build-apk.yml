@@ -41,7 +41,7 @@ jobs:
           mkdir -p ~/.android
           rm -f ~/.android/debug.keystore
           keytool -importkeystore -srckeystore rehnuma.keystore -destkeystore ~/.android/debug.keystore -srcstorepass rehnuma123 -deststorepass android -srcalias rehnuma -destalias androiddebugkey -srckeypass rehnuma123 -destkeypass android -noprompt
-      - name: Build Debug APK with Gradle
+      - name: Copy google-services.json\n        run: cp google-services.json android/app/\n      - name: Build Debug APK with Gradle
         working-directory: ./android
         run: |
           chmod +x gradlew

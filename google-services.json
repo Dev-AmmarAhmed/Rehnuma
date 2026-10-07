@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "409507107740",
+    "firebase_url": "https://rehnuma-society-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "rehnuma-society",
+    "storage_bucket": "rehnuma-society.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:409507107740:android:6adb0045a467582dafae59",
+        "android_client_info": {
+          "package_name": "com.society.rehnuma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "409507107740-18im4tgddck0a8vq5voeorh7l3ch0ss4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.society.rehnuma",
+            "certificate_hash": "4fb3fddf608c644ab8ac766baed98bfc5d9ec68f"
+          }
+        },
+        {
+          "client_id": "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABc8pgeZ1qTT3x6gscZMf29-rvBNQHlf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
