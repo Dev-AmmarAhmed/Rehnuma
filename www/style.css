@@ -85,3 +85,16 @@ input:focus { border-color:var(--primary); }
   padding: 30px 20px 35px !important;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
 }
+
+/* ====== VERSION 2.0 FULL SCREEN OVERRIDES ====== */
+#screen-admin-dash, #screen-member-dash {
+  position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: var(--bg-pro) !important; z-index: 9999;
+  max-width: none !important; border: none !important;
+  border-radius: 0 !important; padding: 0 !important;
+  margin: 0 !important; overflow-y: auto; box-shadow: none !important;
+}
+.pro-header {
+  border-radius: 0 0 24px 24px !important; padding: 30px 20px 35px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+}

@@ -1,10 +1,8 @@
 name: Build Rehnuma Android APK
-
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,14 +24,11 @@ jobs:
         run: |
           if [ ! -d "android" ]; then npx cap add android; fi
           npx cap sync android
-      - name: Version 1.2 & Google Services Setup
+      - name: Inject Configs & Set Version 2.0
         run: |
-          sed -i 's/versionCode 2/versionCode 3/g' android/app/build.gradle
-          sed -i 's/versionCode 1/versionCode 3/g' android/app/build.gradle
-          sed -i 's/versionName "1.1"/versionName "1.2"/g' android/app/build.gradle
-          sed -i 's/versionName "1.0"/versionName "1.2"/g' android/app/build.gradle
-          # Forced injection of google-services.json
-          cp google-services.json android/app/google-services.json || echo "No google-services.json found in root"
+          sed -i 's/versionCode [0-9]*/versionCode 10/g' android/app/build.gradle
+          sed -i 's/versionName "[0-9\.]*"/versionName "2.0"/g' android/app/build.gradle
+          cp google-services.json android/app/google-services.json || true
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           if ! grep -q "USE_BIOMETRIC" "$MANIFEST"; then
             sed -i '/<manifest/a \    <uses-permission android:name="android.permission.USE_BIOMETRIC" />' "$MANIFEST"
