@@ -14,6 +14,7 @@ const firebaseConfig = {
   appId: "1:409507107740:web:8677d798462becd6afae59"
 };
 
+// Yahan dono purane Admins hain
 export const ADMIN_UIDS = ["IPGPTPOsyDfdfAuSn6hZu2WsDWf1", "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
 export const isAdminUid = (uid) => ADMIN_UIDS.includes(uid);
 
@@ -23,13 +24,9 @@ export const db = getFirestore(app);
 export const rtdb = getDatabase(app);
 
 const screens = ["screen-loading","screen-login","screen-pending","screen-rejected","screen-setup","screen-register","screen-member-dash","screen-admin-dash"];
-export function showScreen(id) {
-  screens.forEach(s => document.getElementById(s)?.classList.toggle("hidden", s !== id));
-}
+export function showScreen(id) { screens.forEach(s => document.getElementById(s)?.classList.toggle("hidden", s !== id)); }
+export function isValidSecurePassword(pw) { return pw && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[@/$_&\-\?!;']/.test(pw); }
 
-export function isValidSecurePassword(pw) {
-  return pw && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[@/$_&\-\?!;']/.test(pw);
-}
 let isSessionUnlocked = false;
 const getPinKey = (uid) => `rehnuma_pin_${uid}`;
 const getBioKey = (uid) => `rehnuma_bio_${uid}`;
@@ -44,17 +41,13 @@ export function triggerAppLockIfNeeded() {
     if (localStorage.getItem(getBioKey(u.uid)) === "true") attemptBiometricUnlock();
   }
 }
-
 window.lockAppNow = () => { isSessionUnlocked = false; triggerAppLockIfNeeded(); };
 
 async function attemptBiometricUnlock() {
   try {
     if (window.Capacitor?.Plugins?.NativeBiometric) {
-      await window.Capacitor.Plugins.NativeBiometric.verifyIdentity({
-        reason: "Unlock Rehnuma Society", title: "Rehnuma Security Lock"
-      });
-      isSessionUnlocked = true;
-      document.getElementById("app-lock-screen").classList.add("hidden");
+      await window.Capacitor.Plugins.NativeBiometric.verifyIdentity({ reason: "Unlock Rehnuma Society", title: "Rehnuma Security" });
+      isSessionUnlocked = true; document.getElementById("app-lock-screen").classList.add("hidden");
     }
   } catch (e) {}
 }
@@ -62,11 +55,9 @@ async function attemptBiometricUnlock() {
 document.getElementById("btn-unlock-pin").onclick = () => {
   const u = auth.currentUser; if (!u) return;
   if (document.getElementById("unlock-pin-input").value.trim() === localStorage.getItem(getPinKey(u.uid))) {
-    isSessionUnlocked = true;
-    document.getElementById("app-lock-screen").classList.add("hidden");
+    isSessionUnlocked = true; document.getElementById("app-lock-screen").classList.add("hidden");
   } else {
-    const err = document.getElementById("lock-error");
-    err.textContent = "Incorrect 6-digit PIN."; err.classList.remove("hidden");
+    document.getElementById("lock-error").textContent = "Incorrect PIN."; document.getElementById("lock-error").classList.remove("hidden");
   }
 };
 document.getElementById("btn-unlock-bio").onclick = attemptBiometricUnlock;
@@ -74,14 +65,23 @@ document.getElementById("btn-lock-logout").onclick = () => window.logoutUser();
 
 async function routeUser(user) {
   showScreen("screen-loading");
+  
+  // Strict Admin Check
   if (isAdminUid(user.uid)) {
     if (!localStorage.getItem(getPinKey(user.uid))) showScreen("screen-setup");
     else { showScreen("screen-admin-dash"); triggerAppLockIfNeeded(); }
     return;
   }
+  
   try {
     const snap = await getDoc(doc(db, "members", user.uid));
-    if (!snap.exists()) { showScreen("screen-register"); return; }
+    if (!snap.exists()) { 
+      // DEBUG: Agar admin fail hua, toh yahan UID dikhega!
+      const regTitle = document.querySelector("#screen-register h3");
+      if(regTitle) regTitle.innerHTML = `Member Registration<br><span style="color:#ef4444;font-size:12px;">Debug Your UID: ${user.uid}</span>`;
+      showScreen("screen-register"); 
+      return; 
+    }
     const data = snap.data();
     const st = (data.status || "").toLowerCase();
     if (st === "pending") showScreen("screen-pending");
@@ -95,7 +95,7 @@ async function routeUser(user) {
       showScreen("screen-member-dash"); triggerAppLockIfNeeded();
     } else showScreen("screen-register");
   } catch (e) {
-    alert("Firestore Notice (" + e.code + "): Opening Registration Form.");
+    alert("Firestore Error: " + e.message);
     showScreen("screen-register");
   }
 }
@@ -104,19 +104,15 @@ onAuthStateChanged(auth, u => {
   if (u) routeUser(u);
   else { isSessionUnlocked = false; document.getElementById("app-lock-screen").classList.add("hidden"); showScreen("screen-login"); }
 });
-document.getElementById("toggle-pw").onchange = (e) => {
-  document.getElementById("login-password").type = e.target.checked ? "text" : "password";
-};
+
+document.getElementById("toggle-pw").onchange = (e) => document.getElementById("login-password").type = e.target.checked ? "text" : "password";
 
 document.getElementById("btn-forgot-pw").onclick = async (e) => {
   e.preventDefault();
   const email = document.getElementById("login-email").value.trim();
-  const err = document.getElementById("login-error");
-  if (!email) { err.textContent = "Enter email above first."; err.classList.remove("hidden"); return; }
-  try {
-    await sendPasswordResetEmail(auth, email);
-    alert("✅ Password reset email sent to " + email);
-  } catch (ex) { err.textContent = ex.message; err.classList.remove("hidden"); }
+  if (!email) return alert("Email daalo pehle bhai!");
+  try { await sendPasswordResetEmail(auth, email); alert("Password reset link bhej diya gaya hai!"); } 
+  catch (ex) { alert("Error: " + ex.message); }
 };
 
 document.getElementById("btn-login").onclick = async () => {
@@ -124,34 +120,22 @@ document.getElementById("btn-login").onclick = async () => {
   const pw = document.getElementById("login-password").value;
   const err = document.getElementById("login-error");
   err.classList.add("hidden");
-  if (!email || !pw) { err.textContent = "Enter both email and password."; err.classList.remove("hidden"); return; }
-
-  const btn = document.getElementById("btn-login");
-  btn.disabled = true; btn.textContent = "Verifying...";
+  if (!email || !pw) { err.textContent = "Email aur password dono daalo."; err.classList.remove("hidden"); return; }
+  const btn = document.getElementById("btn-login"); btn.disabled = true; btn.textContent = "Loading...";
   try {
     await signInWithEmailAndPassword(auth, email, pw);
   } catch (signInErr) {
-    if (signInErr.code === "auth/user-not-found") {
-      try { await createUserWithEmailAndPassword(auth, email, pw); }
-      catch (ce) { err.textContent = ce.message; err.classList.remove("hidden"); }
-    } else {
-      try {
-        await createUserWithEmailAndPassword(auth, email, pw);
-      } catch (ce) {
-        if (ce.code === "auth/email-already-in-use") {
-          err.textContent = "Wrong password for this registered email. Tap 'Forgot Password?' to reset.";
-        } else {
-          err.textContent = signInErr.code + ": " + signInErr.message;
-        }
-        err.classList.remove("hidden");
-      }
+    try { await createUserWithEmailAndPassword(auth, email, pw); } 
+    catch (ce) {
+      if (ce.code === "auth/email-already-in-use") err.textContent = "Wrong password. 'Forgot Password' try karo.";
+      else err.textContent = "Error: " + ce.message;
+      err.classList.remove("hidden");
     }
   } finally { btn.disabled = false; btn.textContent = "Sign In / Register"; }
 };
 
 document.getElementById("btn-google").onclick = async () => {
-  const err = document.getElementById("login-error");
-  err.classList.add("hidden");
+  const err = document.getElementById("login-error"); err.classList.add("hidden");
   try {
     const GoogleAuth = window.Capacitor?.Plugins?.GoogleAuth;
     await GoogleAuth.initialize({
@@ -161,12 +145,9 @@ document.getElementById("btn-google").onclick = async () => {
     });
     const gUser = await GoogleAuth.signIn();
     const idToken = gUser?.authentication?.idToken || gUser?.idToken;
-    if (!idToken) throw new Error("No idToken returned from Google. Check Web Client ID in Firebase.");
-    const cred = GoogleAuthProvider.credential(idToken);
-    await signInWithCredential(auth, cred);
+    await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
   } catch (e) {
-    err.textContent = "Google Auth: " + (e.message || JSON.stringify(e));
-    err.classList.remove("hidden");
+    err.textContent = "Google Error: " + (e.message || JSON.stringify(e)); err.classList.remove("hidden");
   }
 };
 
@@ -175,26 +156,16 @@ document.getElementById("btn-complete-setup").onclick = async () => {
   const pw = document.getElementById("setup-password").value;
   const pin = document.getElementById("setup-pin").value.trim();
   const bio = document.getElementById("setup-bio").checked;
-  const err = document.getElementById("setup-error");
-  err.classList.add("hidden");
-  if (!isValidSecurePassword(pw)) { err.textContent = "Password needs 8+ chars (1 Cap, 1 Small, 1 Num, 1 Special @/$_&-?!;')."; err.classList.remove("hidden"); return; }
-  if (!/^\d{6}$/.test(pin)) { err.textContent = "Enter a 6-digit numeric PIN."; err.classList.remove("hidden"); return; }
+  const err = document.getElementById("setup-error"); err.classList.add("hidden");
+  if (!isValidSecurePassword(pw)) { err.textContent = "Password 8 chars lamba, 1 Capital, 1 Small, 1 Num, 1 Special chahye."; err.classList.remove("hidden"); return; }
+  if (!/^\d{6}$/.test(pin)) { err.textContent = "6-digit PIN daalo."; err.classList.remove("hidden"); return; }
   try {
     try { await updatePassword(u, pw); } catch (e) {}
-    localStorage.setItem(getPinKey(u.uid), pin);
-    localStorage.setItem(getBioKey(u.uid), bio ? "true" : "false");
+    localStorage.setItem(getPinKey(u.uid), pin); localStorage.setItem(getBioKey(u.uid), bio ? "true" : "false");
     isSessionUnlocked = true;
-    if (!isAdminUid(u.uid)) {
-      await updateDoc(doc(db, "members", u.uid), { status: "active", appPin: pin, activatedAt: serverTimestamp() });
-    }
+    if (!isAdminUid(u.uid)) await updateDoc(doc(db, "members", u.uid), { status: "active", appPin: pin, activatedAt: serverTimestamp() });
     await routeUser(u);
   } catch (e) { err.textContent = e.message; err.classList.remove("hidden"); }
 };
-
 window.logoutUser = async () => { isSessionUnlocked = false; await signOut(auth); };
-
-if (window.Capacitor?.Plugins?.App) {
-  window.Capacitor.Plugins.App.addListener("appStateChange", ({ isActive }) => {
-    if (!isActive) window.lockAppNow(); else triggerAppLockIfNeeded();
-  });
-}
+if (window.Capacitor?.Plugins?.App) window.Capacitor.Plugins.App.addListener("appStateChange", ({ isActive }) => { if (!isActive) window.lockAppNow(); else triggerAppLockIfNeeded(); });
