@@ -10,22 +10,17 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with: node-version: '22'
+        with: { node-version: '22' }
       - name: Setup Java JDK 17
         uses: actions/setup-java@v5
         with: { distribution: 'temurin', java-version: '17' }
       - name: Install NPM Dependencies
-        run: npm install --legacy-peer-deps
-      - name: Sync Capacitor Android
+        run: npm install
+      - name: WIPE OLD ANDROID & CREATE FRESH
         run: |
-          if [ ! -d "android" ]; then npx cap add android; fi
+          rm -rf android
+          npx cap add android
           npx cap sync android
-      - name: Inject Permanent Keystore
-        run: |
-          sed -i 's/versionCode [0-9]*/versionCode 11/g' android/app/build.gradle
-          sed -i 's/versionName "[0-9\.]*"/versionName "3.0"/g' android/app/build.gradle
-          mkdir -p ~/.android
-          keytool -importkeystore -srckeystore rehnuma-final.keystore -destkeystore ~/.android/debug.keystore -srcstorepass rehnuma123 -deststorepass android -srcalias rehnuma -destalias androiddebugkey -srckeypass rehnuma123 -destkeypass android -noprompt
       - name: Build Debug APK with Gradle
         working-directory: ./android
         run: |
