@@ -2,17 +2,23 @@ import { auth, db } from "./app.js";
 import { doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 document.getElementById("screen-member-dash").innerHTML = `
-  <div class="mem-header">
-    <div>
-      <div id="mem-disp-name" style="font-weight:800;font-size:16px;">Member Name</div>
-      <div id="mem-disp-id" style="font-size:12px;color:var(--primary);font-weight:700;">M ID: M-000000</div>
-    </div>
-    <button onclick="window.lockAppNow()" class="btn-outline" style="padding:6px 10px;border-radius:8px;font-size:12px;">🔒 Lock</button>
+  <div class="pro-header">
+    <div class="icon-btn" onclick="document.getElementById('side-drawer').classList.add('open'); document.getElementById('drawer-bg').style.display='block';">☰</div>
+    <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Administrator Dashboard Pro</p></div>
+    <div class="icon-btn" onclick="window.lockAppNow()">🔒</div>
   </div>
-
-  <button id="btn-pay-1000" class="pay-hero-btn">💳 Monthly installment pay ₹1000</button>
-
-  <div id="mem-tab-home">
+  <div id="drawer-bg" class="drawer-bg" onclick="document.getElementById('side-drawer').classList.remove('open'); this.style.display='none';"></div>
+  <div id="side-drawer" class="drawer">
+    <div class="drawer-header"><h2 style="margin:0;color:#fff;font-size:16px;">⚙️ Control & Settings</h2><div class="icon-btn" onclick="document.getElementById('side-drawer').classList.remove('open'); document.getElementById('drawer-bg').style.display='none';">✕</div></div>
+    <div class="drawer-item" onclick="switchMemTab('home'); document.getElementById('drawer-bg').click();">🏠 Dashboard Home</div>
+    <div class="drawer-item" onclick="switchMemTab('deposit'); document.getElementById('drawer-bg').click();">📒 Deposit Passbook</div>
+    <div class="drawer-item" onclick="switchMemTab('loan'); document.getElementById('drawer-bg').click();">📝 Apply for Loan</div>
+    <div class="drawer-item" onclick="switchMemTab('recovery'); document.getElementById('drawer-bg').click();">🔄 Loan Recovery</div>
+    <div class="drawer-item" style="color:#ef4444; margin-top:auto;" onclick="window.logoutUser()">🚪 Secure Logout</div>
+  </div>
+  <div class="pro-card">
+    <button id="btn-pay-1000" class="pay-hero-btn" style="margin-bottom:20px;">💳 Pay Monthly Installment</button>
+    <div id="mem-tab-home">
     <div class="rules-box">
       <strong>🌟 Welcome to Rehnuma Society</strong>
       <p style="font-size:12px;color:var(--subtext);margin-top:4px;">Under management MDBTW Association • 100% Interest-Free Society.</p>

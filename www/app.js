@@ -138,16 +138,14 @@ document.getElementById("btn-google").onclick = async () => {
   const err = document.getElementById("login-error"); err.classList.add("hidden");
   try {
     const GoogleAuth = window.Capacitor?.Plugins?.GoogleAuth;
-    await GoogleAuth.initialize({
-      clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
-      scopes: ["profile", "email"],
-      grantOfflineAccess: true
-    });
+    await GoogleAuth.initialize({ clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com", scopes: ["profile", "email"], grantOfflineAccess: false });
     const gUser = await GoogleAuth.signIn();
     const idToken = gUser?.authentication?.idToken || gUser?.idToken;
     await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
   } catch (e) {
-    err.textContent = "Google Error: " + (e.message || JSON.stringify(e)); err.classList.remove("hidden");
+    err.innerHTML = "<b>Google Fail:</b> " + (e.message || "Unknown Error") + "<br><b>Code:</b> " + (e.code || e.type || "N/A");
+    err.classList.remove("hidden");
+    alert("GOOGLE AUTH ERROR:\n" + JSON.stringify(e));
   }
 };
 
