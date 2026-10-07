@@ -138,21 +138,10 @@ document.getElementById("btn-google").onclick = async () => {
   const err = document.getElementById("login-error"); err.classList.add("hidden");
   try {
     const provider = new GoogleAuthProvider();
-    // Android Webview me popup kaam nahi karta, isliye redirect use kar rahe hain
-    await signInWithCredential(auth, provider); // Fallback if popup fails
+    await signInWithPopup(auth, provider);
   } catch (e) {
-    if (e.code === "auth/operation-not-supported-in-this-environment") {
-         try {
-             // Capacitor/Cordova fallback
-             const result = await signInWithPopup(auth, provider);
-         } catch(popupErr) {
-             err.innerHTML = "<b>Google Fail:</b> " + popupErr.message;
-             err.classList.remove("hidden");
-         }
-    } else {
-        err.innerHTML = "<b>Google Fail:</b> " + e.message;
-        err.classList.remove("hidden");
-    }
+    err.innerHTML = "<b>Google Fail:</b> " + e.message;
+    err.classList.remove("hidden");
   }
 };
 

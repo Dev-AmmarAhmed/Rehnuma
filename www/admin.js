@@ -2,17 +2,27 @@ import { db, rtdb } from "./app.js";
 import { collection, getDocs, doc, updateDoc, collectionGroup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-document.getElementById("screen-admin-dash").innerHTML = `
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-    <h3 style="color:var(--primary);">Admin Panel</h3>
-    <button onclick="window.lockAppNow()" class="btn-outline" style="padding:6px 10px;border-radius:8px;font-size:12px;">🔒 Lock</button>
+
+  <div class="pro-header">
+    <div class="icon-btn" onclick="document.getElementById(\admin-drawer).classList.add(\open); document.getElementById(\admin-drawer-bg).style.display=\block;">☰</div>
+    <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Administrator Dashboard Pro</p></div>
+    <div class="icon-btn" onclick="window.lockAppNow()">🔒</div>
   </div>
-  <div class="tab-bar">
-    <button id="adm-tab-home" class="tab-btn active">1. Home (Loans)</button>
-    <button id="adm-tab-members" class="tab-btn">2. Members</button>
+  <div id="admin-drawer-bg" class="drawer-bg" onclick="document.getElementById(\admin-drawer).classList.remove(\open); this.style.display=\none;"></div>
+  <div id="admin-drawer" class="drawer">
+    <div class="drawer-header"><h2 style="margin:0;color:#fff;font-size:16px;">⚙️ Admin Controls</h2><div class="icon-btn" onclick="document.getElementById(\admin-drawer).classList.remove(\open); document.getElementById(\admin-drawer-bg).style.display=\none;">✕</div></div>
+    <div class="drawer-item" onclick="document.getElementById(\adm-tab-home).click(); document.getElementById(\admin-drawer-bg).click();">🏠 All Current Loans</div>
+    <div class="drawer-item" onclick="document.getElementById(\adm-tab-members).click(); document.getElementById(\admin-drawer-bg).click();">👥 Registered Members</div>
+    <div class="drawer-item" style="color:#ef4444; margin-top:auto;" onclick="window.logoutUser()">🚪 Secure Logout</div>
   </div>
-  <div id="adm-view-home"><p style="font-size:13px;color:var(--subtext);">Loading current loans...</p></div>
-  <div id="adm-view-members" class="hidden"><p style="font-size:13px;color:var(--subtext);">Loading members...</p></div>
+  
+  <div class="pro-card" style="margin-top:-20px;">
+    <div class="tab-bar" style="border-bottom:1px solid rgba(255,255,255,0.1);">
+      <button id="adm-tab-home" class="tab-btn active" style="background:var(--primary);color:#fff;border:none;">1. Home (Loans)</button>
+      <button id="adm-tab-members" class="tab-btn" style="background:rgba(255,255,255,0.05);color:#fff;border:none;">2. Members</button>
+    </div>
+    <div id="adm-view-home"><p style="font-size:13px;color:#94a3b8;">Loading current loans...</p></div>
+  <div id="adm-view-members" class="hidden"><p style="font-size:13px;color:#94a3b8;">Loading members...</p></div>
   <div id="adm-member-detail" class="hidden"></div>
   <button onclick="window.logoutUser()" class="btn btn-danger" style="margin-top:16px;">Logout Admin</button>`;
 
@@ -36,7 +46,7 @@ document.getElementById("adm-tab-members").onclick = () => {
 let membersCache = {};
 
 export async function loadAllCurrentLoans() {
-  viewHome.innerHTML = `<p style="font-size:13px;color:var(--subtext);">Fetching active loans...</p>`;
+  viewHome.innerHTML = `<p style="font-size:13px;color:#94a3b8;">Fetching active loans...</p>`;
   try {
     const mSnap = await getDocs(collection(db, "members"));
     membersCache = {};
@@ -53,18 +63,18 @@ export async function loadAllCurrentLoans() {
         html += `<div class="list-item">
           <div style="text-align:left;">
             <strong>${membersCache[uid].name || "Member"}</strong>
-            <div style="font-size:12px;color:var(--subtext);">EMI: ₹${l.monthlyEmi || 0}/mo • Left: ${l.monthsLeft || 0} mos</div>
+            <div style="font-size:12px;color:#94a3b8;">EMI: ₹${l.monthlyEmi || 0}/mo • Left: ${l.monthsLeft || 0} mos</div>
           </div>
           <span class="status-badge badge-pending">₹${l.totalAmount || 0}</span>
         </div>`;
       });
     }
-    viewHome.innerHTML = count ? html : `<p style="font-size:13px;color:var(--subtext);">No current loans found.</p>`;
+    viewHome.innerHTML = count ? html : `<p style="font-size:13px;color:#94a3b8;">No current loans found.</p>`;
   } catch (e) { viewHome.innerHTML = `<p class="error-msg">${e.message}</p>`; }
 }
 
 export async function loadAllMembers() {
-  viewMem.innerHTML = `<p style="font-size:13px;color:var(--subtext);">Loading member profiles...</p>`;
+  viewMem.innerHTML = `<p style="font-size:13px;color:#94a3b8;">Loading member profiles...</p>`;
   try {
     const snap = await getDocs(collection(db, "members"));
     let html = `<h4 style="margin-bottom:10px;text-align:left;">Registered Members</h4>`;
@@ -75,7 +85,7 @@ export async function loadAllMembers() {
       html += `<div class="list-item" onclick="window.openMemberProfile('${d.id}')">
         <div style="text-align:left;">
           <strong>${m.name || "Unnamed"}</strong>
-          <div style="font-size:12px;color:var(--subtext);">${m.phone || m.email || ""}</div>
+          <div style="font-size:12px;color:#94a3b8;">${m.phone || m.email || ""}</div>
         </div>
         <span class="status-badge ${st==='REJECTED'?'badge-rejected':'badge-pending'}">${st}</span>
       </div>`;
@@ -107,7 +117,7 @@ window.openMemberProfile = async (uid) => {
       <div class="info-row"><span>Monthly Income:</span><strong>₹${m.income || 0}</strong></div>
     </div>
     <div id="sub-doc-view" class="hidden">
-      <div id="doc-imgs-box"><p style="font-size:13px;color:var(--subtext);">Loading documents from RTDB...</p></div>
+      <div id="doc-imgs-box"><p style="font-size:13px;color:#94a3b8;">Loading documents from RTDB...</p></div>
       <div class="btn-row" style="margin-top:14px;">
         <button id="btn-adm-accept" class="btn btn-primary">✓ Accept Member</button>
         <button id="btn-adm-reject" class="btn btn-danger">✕ Reject</button>
