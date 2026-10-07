@@ -14,7 +14,7 @@ document.getElementById("btn-login").onclick = () => {
   } else if (u === "admin123" && p === "123") {
     showScreen("screen-member-dash");
   } else {
-    err.textContent = "Invalid username or password! Use adminnn123/123 or admin123/123";
+    err.textContent = "Galat credentials! adminnn123/123 ya admin123/123 use karein";
     err.classList.remove("hidden");
   }
 };
