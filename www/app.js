@@ -1,44 +1,29 @@
-const screens = ["screen-loading", "screen-login", "screen-admin-dash", "screen-member-dash"];
+const screens = ["screen-login", "screen-admin-dash", "screen-member-dash"];
 function showScreen(id) {
   screens.forEach(s => document.getElementById(s)?.classList.toggle("hidden", s !== id));
 }
 
-window.switchTab = (role, tab) => {
-  ["home", "members", "loan", "recovery"].forEach(t => {
-    document.getElementById(`nav-${role}-${t}`).classList.remove("active");
-    document.getElementById(`${role}-view-${t}`).classList.add("hidden");
-  });
-  document.getElementById(`nav-${role}-${tab}`).classList.add("active");
-  document.getElementById(`${role}-view-${tab}`).classList.remove("hidden");
-};
-
-document.getElementById("btn-simple-login").onclick = () => {
-  const user = document.getElementById("login-user").value.trim();
-  const pass = document.getElementById("login-password").value.trim();
+document.getElementById("btn-login").onclick = () => {
+  const u = document.getElementById("login-user").value.trim();
+  const p = document.getElementById("login-password").value.trim();
   const err = document.getElementById("login-error");
   err.classList.add("hidden");
 
-  if (user === "adminnn123" && pass === "123") {
-    localStorage.setItem("rehnuma_session", "admin");
+  if (u === "adminnn123" && p === "123") {
     showScreen("screen-admin-dash");
-  } else if (user === "admin123" && pass === "123") {
-    localStorage.setItem("rehnuma_session", "member");
+  } else if (u === "admin123" && p === "123") {
     showScreen("screen-member-dash");
   } else {
-    err.textContent = "Galat credentials! Admin: adminnn123 / 123 | Member: admin123 / 123";
+    err.textContent = "Invalid username or password! Use adminnn123/123 or admin123/123";
     err.classList.remove("hidden");
   }
 };
 
-window.simpleLogout = () => {
-  localStorage.removeItem("rehnuma_session");
-  showScreen("screen-login");
-};
-
-// Check existing session
-window.onload = () => {
-  const session = localStorage.getItem("rehnuma_session");
-  if (session === "admin") showScreen("screen-admin-dash");
-  else if (session === "member") showScreen("screen-member-dash");
-  else showScreen("screen-login");
+window.switchTab = (tab) => {
+  ["home", "members", "loan", "recovery"].forEach(t => {
+    document.getElementById("nav-" + t)?.classList.remove("active");
+    document.getElementById("adm-view-" + t)?.classList.add("hidden");
+  });
+  document.getElementById("nav-" + tab)?.classList.add("active");
+  document.getElementById("adm-view-" + tab)?.classList.remove("hidden");
 };

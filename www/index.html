@@ -7,15 +7,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- LOADING SCREEN -->
-  <div id="screen-loading" class="card hidden" style="text-align:center; padding:40px;">
-    <h2>Loading Rehnuma...</h2>
-  </div>
-
   <!-- LOGIN SCREEN -->
   <div id="screen-login" class="card">
     <div class="brand-header">
-      <h1>Rehnuma</h1>
+      <h2>Rehnuma</h2>
       <p>Under management MDBTW Association</p>
     </div>
     <div class="form-group">
@@ -26,66 +21,51 @@
       <label>Password</label>
       <input type="password" id="login-password" placeholder="123">
     </div>
-    <p id="login-error" class="error-msg hidden"></p>
-    <button id="btn-simple-login" class="btn btn-primary">Login</button>
+    <p id="login-error" class="error-msg hidden" style="color:#ef4444;font-size:12px;margin-bottom:10px;"></p>
+    <button id="btn-login" class="btn btn-primary">Login Now</button>
   </div>
 
-  <!-- ADMIN DASHBOARD -->
+  <!-- ADMIN DASHBOARD (4 Bottom Tabs) -->
   <div id="screen-admin-dash" class="hidden">
     <div class="pro-header">
       <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Admin Dashboard</p></div>
-      <div class="icon-btn" onclick="window.simpleLogout()">🚪</div>
+      <div class="icon-btn" onclick="window.location.reload()" style="cursor:pointer;">🚪</div>
     </div>
-    <div class="pro-card main-content">
+    <div class="pro-card main-content" style="margin-top:-20px; border-radius:16px 16px 0 0; min-height:75vh; color:#fff;">
       <div id="adm-view-home">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">Home</h3>
-        <p style="color:#94a3b8; text-align:center; font-size:13px;">Dashboard Overview (Empty for now)</p>
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">🏠 Home Overview</h3>
+        <p style="color:#94a3b8; text-align:center; font-size:13px; margin-top:10px;">Welcome Admin! System is running smoothly.</p>
       </div>
       <div id="adm-view-members" class="hidden">
-        <h3 style="color:#fff; margin-bottom:15px;">Registered Members</h3>
-        <div id="members-list"><p style="font-size:13px;color:#94a3b8;">Loading members...</p></div>
+        <h3 style="color:#fff; margin-bottom:15px;">👥 Registered Members</h3>
+        <div id="members-list"><p style="font-size:13px;color:#94a3b8;">No members registered yet.</p></div>
       </div>
       <div id="adm-view-loan" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">Loan Management</h3>
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">💸 Loan Management</h3>
+        <p style="color:#94a3b8; text-align:center; font-size:13px; margin-top:10px;">Manage active and pending loans here.</p>
       </div>
       <div id="adm-view-recovery" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">Loan Recovery</h3>
+        <h3 style="color:#fff; text-align:center; margin-top:30px;">🔄 Loan Recovery</h3>
+        <p style="color:#94a3b8; text-align:center; font-size:13px; margin-top:10px;">Track recovery status and installments.</p>
       </div>
     </div>
     <div class="bottom-nav">
-      <div class="nav-item active" id="nav-adm-home" onclick="switchTab('adm', 'home')"><span class="nav-icon">🏠</span><span>Home</span></div>
-      <div class="nav-item" id="nav-adm-members" onclick="switchTab('adm', 'members')"><span class="nav-icon">👥</span><span>Members</span></div>
-      <div class="nav-item" id="nav-adm-loan" onclick="switchTab('adm', 'loan')"><span class="nav-icon">💸</span><span>Loan</span></div>
-      <div class="nav-item" id="nav-adm-recovery" onclick="switchTab('adm', 'recovery')"><span class="nav-icon">🔄</span><span>Recovery</span></div>
+      <div class="nav-item active" id="nav-home" onclick="switchTab('home')"><span>🏠</span><span>Home</span></div>
+      <div class="nav-item" id="nav-members" onclick="switchTab('members')"><span>👥</span><span>Members</span></div>
+      <div class="nav-item" id="nav-loan" onclick="switchTab('loan')"><span>💸</span><span>Loan</span></div>
+      <div class="nav-item" id="nav-recovery" onclick="switchTab('recovery')"><span>🔄</span><span>Recovery</span></div>
     </div>
   </div>
 
   <!-- MEMBER DASHBOARD -->
-  <div id="screen-member-dash" class="hidden">
-    <div class="pro-header">
-      <div class="pro-title"><h1>REHNUMA SOCIETY</h1><p>Member Dashboard</p></div>
-      <div class="icon-btn" onclick="window.simpleLogout()">🚪</div>
+  <div id="screen-member-dash" class="hidden" style="padding:20px; color:#fff;">
+    <div class="brand-header">
+      <h2>Member Panel</h2>
+      <p>Welcome Member</p>
     </div>
-    <div class="pro-card main-content">
-      <div id="mem-view-home">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">Home</h3>
-        <p style="color:#94a3b8; text-align:center; font-size:13px;">Welcome Member (Empty for now)</p>
-      </div>
-      <div id="mem-view-members" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">Members Directory</h3>
-      </div>
-      <div id="mem-view-loan" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">My Loans</h3>
-      </div>
-      <div id="mem-view-recovery" class="hidden">
-        <h3 style="color:#fff; text-align:center; margin-top:30px;">My Recovery / Payments</h3>
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item active" id="nav-mem-home" onclick="switchTab('mem', 'home')"><span class="nav-icon">🏠</span><span>Home</span></div>
-      <div class="nav-item" id="nav-mem-members" onclick="switchTab('mem', 'members')"><span class="nav-icon">👥</span><span>Members</span></div>
-      <div class="nav-item" id="nav-mem-loan" onclick="switchTab('mem', 'loan')"><span class="nav-icon">💸</span><span>Loan</span></div>
-      <div class="nav-item" id="nav-mem-recovery" onclick="switchTab('mem', 'recovery')"><span class="nav-icon">🔄</span><span>Recovery</span></div>
+    <div class="card" style="margin-top:20px;">
+      <p>Aapka member dashboard successfully login ho gaya hai.</p>
+      <button class="btn btn-primary" onclick="window.location.reload()" style="margin-top:20px;">Logout</button>
     </div>
   </div>
 
