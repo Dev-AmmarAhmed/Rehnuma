@@ -66,3 +66,22 @@ input:focus { border-color:var(--primary); }
   .drawer-item { padding:18px 20px; color:#f8fafc; font-size:14px; font-weight:600; display:flex; align-items:center; gap:14px; border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer; }
   .drawer-item:hover { background:rgba(255,255,255,0.05); }
   
+/* ====== VERSION 2.0 FULL SCREEN OVERRIDES ====== */
+#screen-admin-dash, #screen-member-dash {
+  position: fixed !important;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: var(--bg-pro) !important;
+  z-index: 9999;
+  max-width: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow-y: auto;
+  box-shadow: none !important;
+}
+.pro-header {
+  border-radius: 0 0 24px 24px !important;
+  padding: 30px 20px 35px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+}

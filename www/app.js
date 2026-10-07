@@ -75,6 +75,10 @@ async function routeUser(user) {
   
   try {
     const snap = await getDoc(doc(db, "members", user.uid));
+    if (snap.exists() && snap.data().appPin && !localStorage.getItem(getPinKey(user.uid))) {
+        localStorage.setItem(getPinKey(user.uid), snap.data().appPin);
+        localStorage.setItem(getBioKey(user.uid), "true");
+    }
     if (!snap.exists()) { 
       // DEBUG: Agar admin fail hua, toh yahan UID dikhega!
       const regTitle = document.querySelector("#screen-register h3");
@@ -136,13 +140,16 @@ document.getElementById("btn-login").onclick = async () => {
 
 document.getElementById("btn-google").onclick = async () => {
   const err = document.getElementById("login-error"); err.classList.add("hidden");
+  const btn = document.getElementById("btn-google"); btn.disabled = true; btn.textContent = "Google se connect ho raha hai...";
   try {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    const GoogleAuth = window.Capacitor?.Plugins?.GoogleAuth;
+    await GoogleAuth.initialize({ clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com", scopes: ["profile", "email"], grantOfflineAccess: false });
+    const gUser = await GoogleAuth.signIn();
+    const idToken = gUser?.authentication?.idToken || gUser?.idToken;
+    await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
   } catch (e) {
-    err.innerHTML = "<b>Google Fail:</b> " + e.message;
-    err.classList.remove("hidden");
-  }
+    err.innerHTML = "<b>Google Fail:</b> " + (e.message || "Native error"); err.classList.remove("hidden");
+  } finally { btn.disabled = false; btn.textContent = "🌐 Login with Google"; }
 };
 
 document.getElementById("btn-complete-setup").onclick = async () => {
