@@ -15,7 +15,7 @@ const firebaseConfig = {
 };
 
 // Yahan dono purane Admins hain
-export const ADMIN_UIDS = ["IPGPTPOsyDfdfAuSn6hZu2WsDWf1", "rtuj0PgtxWO6CGc3qo1SgiohFyn1", "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
+export const ADMIN_UIDS = ["iPGPTPOsyDfdfAuSn6hZu2WsDWf1", "rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
 export const isAdminUid = (uid) => ADMIN_UIDS.includes(uid);
 
 const app = initializeApp(firebaseConfig);
