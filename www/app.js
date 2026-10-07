@@ -15,7 +15,7 @@ const firebaseConfig = {
 };
 
 // Yahan dono purane Admins hain
-export const ADMIN_UIDS = ["IPGPTPOsyDfdfAuSn6hZu2WsDWf1", "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
+export const ADMIN_UIDS = ["IPGPTPOsyDfdfAuSn6hZu2WsDWf1", "rtuj0PgtxWO6CGc3qo1SgiohFyn1", "Rtuj0PgtxWO6CGc3qo1SgiohFyn1"];
 export const isAdminUid = (uid) => ADMIN_UIDS.includes(uid);
 
 const app = initializeApp(firebaseConfig);
@@ -141,7 +141,7 @@ document.getElementById("btn-google").onclick = async () => {
     await GoogleAuth.initialize({
       clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
       scopes: ["profile", "email"],
-      grantOfflineAccess: false
+      grantOfflineAccess: true
     });
     const gUser = await GoogleAuth.signIn();
     const idToken = gUser?.authentication?.idToken || gUser?.idToken;
