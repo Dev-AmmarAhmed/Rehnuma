@@ -137,15 +137,22 @@ document.getElementById("btn-login").onclick = async () => {
 document.getElementById("btn-google").onclick = async () => {
   const err = document.getElementById("login-error"); err.classList.add("hidden");
   try {
-    const GoogleAuth = window.Capacitor?.Plugins?.GoogleAuth;
-    await GoogleAuth.initialize({ clientId: "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com", scopes: ["profile", "email"], grantOfflineAccess: false });
-    const gUser = await GoogleAuth.signIn();
-    const idToken = gUser?.authentication?.idToken || gUser?.idToken;
-    await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
+    const provider = new GoogleAuthProvider();
+    // Android Webview me popup kaam nahi karta, isliye redirect use kar rahe hain
+    await signInWithCredential(auth, provider); // Fallback if popup fails
   } catch (e) {
-    err.innerHTML = "<b>Google Fail:</b> " + (e.message || "Unknown Error") + "<br><b>Code:</b> " + (e.code || e.type || "N/A");
-    err.classList.remove("hidden");
-    alert("GOOGLE AUTH ERROR:\n" + JSON.stringify(e));
+    if (e.code === "auth/operation-not-supported-in-this-environment") {
+         try {
+             // Capacitor/Cordova fallback
+             const result = await signInWithPopup(auth, provider);
+         } catch(popupErr) {
+             err.innerHTML = "<b>Google Fail:</b> " + popupErr.message;
+             err.classList.remove("hidden");
+         }
+    } else {
+        err.innerHTML = "<b>Google Fail:</b> " + e.message;
+        err.classList.remove("hidden");
+    }
   }
 };
 

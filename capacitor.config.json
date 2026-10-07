@@ -2,12 +2,5 @@
   "appId": "com.society.rehnuma",
   "appName": "Rehnuma",
   "webDir": "www",
-  "bundledWebRuntime": false,
-  "plugins": {
-    "GoogleAuth": {
-      "scopes": ["profile", "email"],
-      "serverClientId": "409507107740-rfe62bavasn54neat2vic0mjop81p2ks.apps.googleusercontent.com",
-      "forceCodeForRefreshToken": true
-    }
-  }
+  "bundledWebRuntime": false
 }
